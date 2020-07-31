@@ -1,0 +1,208 @@
+#include<bits/stdc++.h>
+#include<conio.h>
+#include<windows.h>
+
+using namespace std;
+
+bool gameOver;
+
+int x,y, x_food,y_food,score;
+int width = 40 , height = 20;
+
+enum direction {stop = 0,LEFT , RIGHT , UP , DOWN};
+direction dir;
+
+int x_tail[100],y_tail[100];
+int tail_len=0;
+
+void setup()
+{
+    gameOver = false;
+    dir = stop;
+
+    x=width/2;
+    y=height/2;
+
+    x_food=rand()%(width-1);
+    y_food=rand()%(height-1);
+
+    score = 0;
+
+}
+
+void draw()
+{
+    system("cls");
+
+    for(int i=0;i<width+1;i++)
+    {
+        cout<<"#";
+    }
+    cout<<endl;
+
+    for(int i=0;i<height;i++)
+    {
+        for(int j=0;j<width;j++)
+        {
+            if(j==0 || j==width-1)
+            {
+                cout<<"#";
+            }
+            if(j==x && i == y)
+            {
+                cout<<"O";
+            }
+            else if(j==x_food && i==y_food)
+            {
+                cout<<"*";
+            }
+            else
+             {
+                 bool show= false;
+                 for(int k=0; k<tail_len;k++)
+                 {
+                     if(x_tail[k]==j && y_tail[k]== i)
+                     {
+                         cout<<"o";
+                         show = true;
+                     }
+
+                 }
+                  if(!show)
+                    {
+                        cout<<" ";
+                    }
+             }
+        }
+        cout<<endl;
+    }
+
+    for(int i=0;i<width+1;i++)
+    {
+        cout<<"#";
+    }
+    cout<<endl;
+    cout<<endl<<"SCORE:"<<score<<endl;
+
+}
+
+void input()
+{
+    if(_kbhit())
+    {
+        switch(_getch())
+        {
+        case 'a':
+            dir = LEFT;
+            break;
+        case 'w':
+            dir = UP;
+            break;
+        case 's':
+            dir = DOWN;
+            break;
+        case 'd':
+            dir = RIGHT;
+            break;
+        case 'x':
+            gameOver = true;
+            break;
+        default:
+            break;
+
+        }
+    }
+
+}
+
+void logic()
+{
+    int ini_x = x_tail[0];
+    int ini_y = y_tail[0];
+    int final_x,final_y;
+
+    x_tail[0] = x;
+    y_tail[0] = y;
+
+    for(int i = 1; i<tail_len;i++)
+    {
+        final_x = x_tail[i];
+        final_y = y_tail[i];
+
+        x_tail[i] = ini_x;
+        y_tail[i] = ini_y;
+
+        ini_x = final_x;
+        ini_y = final_y;
+    }
+
+
+    switch(dir)
+    {
+    case LEFT:
+        x--;
+        break;
+    case RIGHT:
+        x++;
+        break;
+    case UP:
+        y--;
+        break;
+    case DOWN:
+        y++;
+        break;
+    default:
+        break;
+    }
+
+    if(x >= width )
+    {
+        x=0;
+    }
+    else if(x<0)
+    {
+        x = width-1;
+    }
+    if(y >= height )
+    {
+        y=0;
+    }
+    else if(y<0)
+    {
+        y = height-1;
+    }
+
+    for(int k=0;k<tail_len;k++)
+    {
+        if(x_tail[k]==x && y_tail[k]==y)
+        {
+            gameOver = true;
+        }
+    }
+
+    if(x == x_food && y == y_food)
+    {
+        tail_len++;
+
+        score ++;
+
+        x_food=rand()%(width-1);
+        y_food=rand()%(height-1);
+    }
+}
+
+int main()
+{
+    setup();
+
+    while(!gameOver)
+    {
+        draw();
+        input();
+        logic();
+        Sleep(10);
+    }
+
+
+    return 0;
+}
